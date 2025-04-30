@@ -31,4 +31,4 @@ if st.button("질문하기"):
             st.write(answer)
 
         except Exception as e:
-            st.error(f"오류 발생: {e}")
+           st.error(f"오류 발생: {str(e).encode('utf-8', errors='ignore').decode('utf-8')}")
