@@ -16,7 +16,7 @@ if st.button("질문하기"):
         try:
             openai.api_key = api_key
 
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": "당신은 친절한 AI 어시스턴트입니다."},
