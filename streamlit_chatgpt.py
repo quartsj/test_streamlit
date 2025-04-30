@@ -1,21 +1,21 @@
 import streamlit as st
 from openai import OpenAI
-
+#사이트 layout 작성
 st.set_page_config(page_title="GPT-4.1 Mini 질문 응답기", layout="centered")
 st.title("GPT-4.1 Mini 질문 응답기")
-
+#API 키 입력
 api_key = st.text_input("OpenAI API Key를 입력하세요:", type="password")
-
+#chatgpt 모델 선택기능 추가
 model = st.selectbox(
     "사용할 모델을 선택하세요:",
     options=["gpt-3.5-turbo", "gpt-4.1-mini"],
     index=1
 )
-
+#chatgpt temperature(창의성)설정
 temperature = st.slider("창의성(temperature) 설정:", 0.0, 1.0, 0.7, step=0.1)
-
+#더욱 긴 문장의 질문 입력가능
 question = st.text_area("질문을 입력하세요:", height=150)
-
+#알맞지 않은 항목 작성시의 에러 메시지 및 api 설정
 if st.button("질문하기"):
     if not api_key:
         st.error("OpenAI API Key를 입력해주세요.")
@@ -38,6 +38,6 @@ if st.button("질문하기"):
             answer = response.choices[0].message.content
             st.success("GPT의 답변:")
             st.write(answer)
-
+#unicode문자 읽기 오류시 예외처리 후 출력
         except Exception as e:
            st.error(f"오류 발생: {str(e).encode('utf-8', errors='ignore').decode('utf-8')}")
