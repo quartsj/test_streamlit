@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
 st.set_page_config(page_title="GPT-4.1 Mini 질문 응답기", layout="centered")
 st.title("GPT-4.1 Mini 질문 응답기")
@@ -14,10 +14,10 @@ if st.button("질문하기"):
         st.error("질문을 입력해주세요.")
     else:
         try:
-            openai.api_key = api_key
+            client = OpenAI(api_key=api_key)
 
             response = client.chat.completions.create(
-                model="gpt-4.1-mini",
+                model="gpt-4.1-mini",  
                 messages=[
                     {"role": "system", "content": "당신은 친절한 AI 어시스턴트입니다."},
                     {"role": "user", "content": question}
@@ -26,7 +26,7 @@ if st.button("질문하기"):
                 max_tokens=500,
             )
 
-            answer = response['choices'][0]['message']['content']
+            answer = response.choices[0].message.content
             st.success("GPT의 답변:")
             st.write(answer)
 
