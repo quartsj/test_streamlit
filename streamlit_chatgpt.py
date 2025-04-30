@@ -17,7 +17,7 @@ if st.button("질문하기"):
         try:
             openai.api_key = api_key
 
-                response = openai.ChatCompletion.create(
+            response = openai.ChatCompletion.create(
                     model="gpt-4.1-mini",  
                     messages=[
                         {"role": "system", "content": "당신은 친절한 AI 어시스턴트입니다."},
@@ -25,11 +25,11 @@ if st.button("질문하기"):
                     ],
                     temperature=0.7,
                     max_tokens=500,
-                )
+           )
 
-                answer = response['choices'][0]['message']['content']
-                st.success(" GPT의 답변:")
-                st.write(answer)
+           answer = response['choices'][0]['message']['content']
+           st.success(" GPT의 답변:")
+           st.write(answer)
 
         except Exception as e:
             st.error(f" 오류 발생: {e}")
