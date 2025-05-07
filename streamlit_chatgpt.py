@@ -450,7 +450,7 @@ if user_input and st.session_state.api_key:
         reply = response.choices[0].message.content
         st.session_state.lib_chat.append({"role": "assistant", "content": reply})
         st.session_state.lib_input = ""
-        st.query_params(lib_updated="1")
+        st.experimental_set_query_params(lib_updated="1")
     except Exception as e:
         st.error(f"오류 발생: {str(e).encode('utf-8', errors='ignore').decode('utf-8')}")
 
