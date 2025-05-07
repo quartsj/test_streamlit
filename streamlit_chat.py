@@ -53,8 +53,5 @@ if user_input and st.session_state.api_key:
         st.session_state.messages.append({"role": "assistant", "content": reply})
         st.session_state.chat_input = ""  # 입력창 초기화
 
-        # 새 메시지를 보여주기 위해 다시 렌더링
-        st.experimental_set_query_params(updated="true")
-
     except Exception as e:
         st.error(f"오류 발생: {str(e).encode('utf-8', errors='ignore').decode('utf-8')}")
