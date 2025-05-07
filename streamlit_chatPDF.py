@@ -1,7 +1,8 @@
 import streamlit as st
-from openai import OpenAI
+import requests
 import fitz  # PyMuPDF
-import os
+from io import BytesIO
+from openai import OpenAI
 
 # 페이지 설정
 st.set_page_config(page_title="ChatPDF 챗봇", layout="centered")
@@ -11,30 +12,36 @@ st.title("📚 ChatPDF 챗봇")
 if "pdf_text" not in st.session_state:
     st.session_state.pdf_text = ""
 
-# 파일 업로드
-uploaded_file = st.file_uploader("PDF 파일을 업로드하세요.", type=["pdf"])
+# PDF 링크 입력
+pdf_url = st.text_input("PDF 파일의 URL을 입력하세요:")
 
-# PDF 파일 처리
-if uploaded_file is not None:
+# PDF 링크에서 텍스트 추출
+if pdf_url:
     try:
-        # PDF 파일 읽기
-        pdf_reader = fitz.open(uploaded_file)
-        pdf_text = ""
-        
-        # 모든 페이지에서 텍스트 추출
-        for page_num in range(pdf_reader.page_count):
-            page = pdf_reader.load_page(page_num)
-            pdf_text += page.get_text()
+        # PDF 파일 다운로드
+        response = requests.get(pdf_url)
+        if response.status_code == 200:
+            # PDF 파일 읽기
+            pdf_file = BytesIO(response.content)
+            pdf_reader = fitz.open(pdf_file)
+            pdf_text = ""
+            
+            # 모든 페이지에서 텍스트 추출
+            for page_num in range(pdf_reader.page_count):
+                page = pdf_reader.load_page(page_num)
+                pdf_text += page.get_text()
 
-        # 세션 상태에 텍스트 저장
-        st.session_state.pdf_text = pdf_text
-        st.success("PDF 파일이 성공적으로 업로드 되었습니다.")
-        
-        # PDF 내용 일부 미리보기
-        st.text_area("PDF 내용 미리보기", value=pdf_text[:1000], height=200)
+            # 세션 상태에 텍스트 저장
+            st.session_state.pdf_text = pdf_text
+            st.success("PDF 파일이 성공적으로 로드되었습니다.")
 
+            # PDF 내용 일부 미리보기
+            st.text_area("PDF 내용 미리보기", value=pdf_text[:1000], height=200)
+
+        else:
+            st.error("PDF 파일을 다운로드할 수 없습니다. URL을 확인해주세요.")
     except Exception as e:
-        st.error(f"PDF 처리 중 오류 발생: {str(e)}")
+        st.error(f"PDF 파일 다운로드 또는 처리 중 오류 발생: {str(e)}")
 
 # 질의응답
 if st.session_state.pdf_text:
@@ -71,4 +78,4 @@ if st.session_state.pdf_text:
         st.success("PDF 내용이 초기화되었습니다.")
 
 else:
-    st.warning("PDF 파일을 업로드해주세요.")
+    st.warning("PDF URL을 입력해주세요.")
