@@ -1,12 +1,13 @@
 import streamlit as st
 from openai import OpenAI
 
-# 페이지 기본 설정
+# 페이지 설정
 st.set_page_config(page_title="국립부경대학교 도서관 챗봇", layout="centered")
+st.title("📚 국립부경대학교 도서관 챗봇")
 
-# 도서관 규정 문자열 (요약본)
+# 도서관 규정 요약 (원문을 정리해서 삽입 가능)
 PKNU_LIB_RULES = """
- 제1장 총칙
+       제1장 총칙
 
  제1조(목적) 이 규정은 「대학도서관진흥법」과 「국립부경대학교 학칙」(이하 “학칙”이라 한다) 제11조의3에 따라 국립부경대학교 도서관(이하 “도서관”이라 한다)의 발전계획 수립과 진행, 직원의 배치, 학술정보자료의 확보와 효율적인 이용 및 관리에 관한 사항을 규정함을 목적으로 한다.
 
@@ -317,73 +318,73 @@ PKNU_LIB_RULES = """
 
 제1조(시행일) 이 학칙은 공포한 날부터 시행한다. 다만 제65조제2항은 2010학년도 이후 학번의 재적생부터 적용한다.
 
-제2조(다른규정의 개정)  「부경대학교 도서관 규정」 일부를 다음과 같이 개정한다.
+제2조(다른규정의 개정) ① 「부경대학교 도서관 규정」 일부를 다음과 같이 개정한다.
 
 제3조제3항 중 “학술정보과”를 “학술정보원”으로 한다.
 
-  「부경대학교 대학도서관운영위원회 규정」 일부를 다음과 같이 개정한다.
+ ② 「부경대학교 대학도서관운영위원회 규정」 일부를 다음과 같이 개정한다.
 
 제6조 제1항 중 “학술정보과”를 “학술정보원”으로 한다.
 
- 「부경대학교 현장실습 운영 규정」 일부를 다음과 같이 개정한다.
+ ③ 「부경대학교 현장실습 운영 규정」 일부를 다음과 같이 개정한다.
 
 제3조 제1항 중 “인재개발원”을 “학생역량개발과”로 한다.
 
-  「부경대학교 대학일자리센터 규정」 일부를 다음과 같이 개정한다.
+ ④ 「부경대학교 대학일자리센터 규정」 일부를 다음과 같이 개정한다.
 
 제3조  중 “신산학융합본부”를 “학생처”로, 제5조 중 “신산학융합본부장”을 “학생처장”, “인재개발원장”을 “학생역량개발부처장”으로, 제7조 중 “인재개발원장, 신산학개발원장”을 “학생역량개발부처장”으로 한다.
 
-  「부경대학교 기록관 운영규정」 일부를 다음과 같이 개정한다.
+ ⑤ 「부경대학교 기록관 운영규정」 일부를 다음과 같이 개정한다.
 
 제4조 제1항 중 “기록관에 관장을 두며, 기록관장은 본교 교수 또는 부교수 중에서 총장이 임명한다.”를 “기록관은 총무과 소속으로 하며, 기록관의 장은 총무과장이 된다.”로 하며 제7조를 삭제한다.
 
-  「부경대학교 교육과정운영위원회 규정」 일부를 다음과 같이 개정한다.
+ ⑥ 「부경대학교 교육과정운영위원회 규정」 일부를 다음과 같이 개정한다.
 
 제2조 제3항 중 “학생부처장”을 “학생역량개발부처장”으로 하고, “인재개발원장”을 삭제하며, 제5항 중 “학생역량개발원장”을 “학생역량개발부처장”, “교수학습성과원장”을 “교수학습지원센터장”, “기획부처장”을 “성과관리센터장”으로 하고, “학생부처장”을 삭제하며, 제6항 중 “학생역량개발원장”을 “학생역량개발부처장”, “교수학습성과원장”을 “교수학습지원센터장”, “기획부처장”을 “성과관리센터장”으로 하고 “학생부처장”을 삭제한다.
 
- 「부경대학교 링크플러스 사업단 운영규정」 일부를 다음과 같이 개정한다.
+ ⑦ 「부경대학교 링크플러스 사업단 운영규정」 일부를 다음과 같이 개정한다.
 
 제7조 제6항 중 “인재개발원장”을 “학생역량개발부처장”으로 한다.
 
-  「부경대학교 비교과교육과정 운영 규정」 일부를 다음과 같이 개정한다. 제2조제3호 중 “미래교육혁신본부 학생역량개발원”을 “학생역량개발과”로 한다.
+ ⑧ 「부경대학교 비교과교육과정 운영 규정」 일부를 다음과 같이 개정한다. 제2조제3호 중 “미래교육혁신본부 학생역량개발원”을 “학생역량개발과”로 한다.
 
-  「부경대학교 보안업무 시행 규정」 일부를 다음과 같이 개정한다.
+ ⑨ 「부경대학교 보안업무 시행 규정」 일부를 다음과 같이 개정한다.
 
 제2조  중 “미래교육혁신본부”를 삭제하고 “부속시설”을 “학부대학, 부속시설”로 하며, 제4조제3항제3호의 “기획과장”을 “기획전략과장”으로 한다.
 
-  「부경대학교 연구비 감사 규정」 일부를 다음과 같이 개정한다.
+ ⑩ 「부경대학교 연구비 감사 규정」 일부를 다음과 같이 개정한다.
 
 제4조 제2항의 “산학부총장”을 “대외부총장”으로 한다.
 
- 「부경대학교 기획위원회 규정」 일부를 다음과 같이 개정한다.
+⑪ 「부경대학교 기획위원회 규정」 일부를 다음과 같이 개정한다.
 
 제8조제2항 중 “기획팀장”을 “기획전략과 팀장”으로 한다.
 
- 「부경대학교 캠퍼스기획위원회 규정」 일부를 다음과 같이 개정한다.
+⑫ 「부경대학교 캠퍼스기획위원회 규정」 일부를 다음과 같이 개정한다.
 
 제3조제2항 중 “기획과장”을 “기획전략과장”으로, 제6조제2항 중 “캠퍼스평가팀장”을 “기획전략과 팀장” 으로 한다.
 
-  「부경대학교 대학자체평가 등에 관한 규정」 일부를 다음과 같이 개정한다.
+ ⑬ 「부경대학교 대학자체평가 등에 관한 규정」 일부를 다음과 같이 개정한다.
 
 제8조 제3항 중 “기획과장”을 “기획전략과장”으로 한다.
 
-  「부경대학교 제 규정 관리 규정」 일부를 다음과 같이 개정한다.
+ ⑭ 「부경대학교 제 규정 관리 규정」 일부를 다음과 같이 개정한다.
 
 제8조 제4항 중 “기획과장”을 “기획전략과장”으로 한다.
 
-  「부경대학교 드래곤밸리지원센터 규정」을 「부경대학교 기업지원컨택센터 규정」으로 하고 일부를 다음과 같이 개정한다.
+ ⑮ 「부경대학교 드래곤밸리지원센터 규정」을 「부경대학교 기업지원컨택센터 규정」으로 하고 일부를 다음과 같이 개정한다.
 
 제1조  및 제2조 중 “드래곤밸리지원센터”를 “기업지원컨택센터”로 한다.
 
-  「부경대학교 재정지원사업성과관리센터 운영 규정」 일부를 다음과 같이 개정한다.
+ ? 「부경대학교 재정지원사업성과관리센터 운영 규정」 일부를 다음과 같이 개정한다.
 
 제1조  및 제2조의 “재정지원사업성과관리센터”를 “성과관리센터”로, 제2조제2호 중 “성과 평가”를 “성과 분석·평가”로, 제2조제3호 중 “재정지원사업의”를 삭제하며, 제3조제3항 중 “기획과”를 “기획전략과”로, 제7조 중“자체평가위원회 및”을 “자체평가위원회,”로, “사업중복방지위원회”를 “사업중복방지위원회 및 교육성과 분석·관리를 위한 교육성과관리위원회”로 한다.
 
-  「부경대학교 다문화 및 북한이탈 학생 지원에 관한 규정」 일부를 다음과 같이 개정한다.
+ ? 「부경대학교 다문화 및 북한이탈 학생 지원에 관한 규정」 일부를 다음과 같이 개정한다.
 
 제4조 제1항제3호 중 “인재개발원”을 “학생역량개발과”로 한다.
 
-  「부경대학교 신산학융합본부 신산학개발원 규정」 일부를 다음과 같이 개정한다.
+ ? 「부경대학교 신산학융합본부 신산학개발원 규정」 일부를 다음과 같이 개정한다.
 
 제3조 제1항 중 “부교수 이상의”를 “조교수 이상의”로 하고, 제4항 중 “부교수 이상의”를 “조교수 이상의”로 한다.
 
@@ -412,57 +413,52 @@ PKNU_LIB_RULES = """
 제4조(다른 규정의 개정) 본교 제 규정의 제명 및 내용 중 “부경대학교”는 “국립부경대학교”로 한다.
 """
 
-# API Key 입력 및 세션 저장
+# API Key 세션 저장
 if "api_key" not in st.session_state:
     st.session_state.api_key = ""
-api_key_input = st.text_input("OpenAI API Key를 입력하세요:", type="password", value=st.session_state.api_key)
-st.session_state.api_key = api_key_input
+api_key = st.text_input("🔑 OpenAI API Key:", type="password", value=st.session_state.api_key)
+st.session_state.api_key = api_key
 
-# 제목 출력
-st.title("📚 국립부경대학교 도서관 챗봇")
-
-# 초기 시스템 메시지 설정
+# 채팅 세션 초기화
 if "lib_chat" not in st.session_state:
-    st.session_state.lib_chat = [{
-        "role": "system",
-        "content": f"너는 국립부경대학교 도서관 규정에 따라 답변하는 AI 챗봇이다. 다음은 관련 규정이다:\n{PKNU_LIB_RULES}"
-    }]
-if "lib_input" not in st.session_state:
-    st.session_state.lib_input = ""
+    st.session_state.lib_chat = [
+        {"role": "system", "content": f"너는 국립부경대학교 도서관 규정에 따라 답변하는 AI 챗봇이다. 다음은 규정이다:\n{PKNU_LIB_RULES}"}
+    ]
 
-# 대화 내역 출력
+# 기존 채팅 메시지 출력
 for msg in st.session_state.lib_chat[1:]:
-    if msg["role"] == "user":
-        st.markdown(f"**🧑 사용자:** {msg['content']}")
-    elif msg["role"] == "assistant":
-        st.markdown(f"**🤖 챗봇:** {msg['content']}")
+    with st.chat_message("user" if msg["role"] == "user" else "assistant"):
+        st.markdown(msg["content"])
 
-# 사용자 입력
-user_input = st.text_input("질문을 입력하세요:", value=st.session_state.lib_input, key="lib_input_box")
+# 사용자 질문 입력
+user_prompt = st.chat_input("질문을 입력하세요.")
 
-# 질문 입력 시 응답 생성
-if user_input and st.session_state.api_key:
-    st.session_state.lib_chat.append({"role": "user", "content": user_input})
-    try:
-        client = OpenAI(api_key=st.session_state.api_key)
-        with st.spinner("답변 생성 중..."):
+# 질문 처리
+if user_prompt and api_key:
+    st.session_state.lib_chat.append({"role": "user", "content": user_prompt})
+    with st.chat_message("user"):
+        st.markdown(user_prompt)
+
+    with st.spinner("답변 생성 중..."):
+        try:
+            client = OpenAI(api_key=api_key)
             response = client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=st.session_state.lib_chat,
-                temperature=0.2,
+                temperature=0.3,
                 max_tokens=500,
             )
             reply = response.choices[0].message.content
             st.session_state.lib_chat.append({"role": "assistant", "content": reply})
-            st.session_state.lib_input = ""  # 입력창 초기화
 
-    except Exception as e:
-        st.error(f"오류 발생: {str(e).encode('utf-8', errors='ignore').decode('utf-8')}")
+            with st.chat_message("assistant"):
+                st.markdown(reply)
 
-# Clear 버튼: 대화 초기화
+        except Exception as e:
+            st.error(f"오류 발생: {str(e).encode('utf-8', errors='ignore').decode('utf-8')}")
+
+# 대화 초기화 버튼
 if st.button("🧹 대화 초기화"):
-    st.session_state.lib_chat = [{
-        "role": "system",
-        "content": f"너는 국립부경대학교 도서관 규정에 따라 답변하는 AI 챗봇이다. 다음은 관련 규정이다:\n{PKNU_LIB_RULES}"
-    }]
-    st.session_state.lib_input = ""
+    st.session_state.lib_chat = [
+        {"role": "system", "content": f"너는 국립부경대학교 도서관 규정에 따라 답변하는 AI 챗봇이다. 다음은 규정이다:\n{PKNU_LIB_RULES}"}
+    ]
