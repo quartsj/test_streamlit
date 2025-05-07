@@ -21,9 +21,9 @@ if pdf_url:
         # PDF 파일 다운로드
         response = requests.get(pdf_url)
         if response.status_code == 200:
-            # PDF 파일 읽기
+            # PDF 파일을 BytesIO 객체로 읽기
             pdf_file = BytesIO(response.content)
-            pdf_reader = fitz.open(pdf_file)
+            pdf_reader = fitz.open(pdf_file)  # BytesIO 객체를 fitz.open()에 전달
             pdf_text = ""
             
             # 모든 페이지에서 텍스트 추출
