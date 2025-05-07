@@ -23,7 +23,8 @@ if pdf_url:
         if response.status_code == 200:
             # PDF 파일을 BytesIO 객체로 읽기
             pdf_file = BytesIO(response.content)
-            pdf_reader = fitz.open(pdf_file)  # BytesIO 객체를 fitz.open()에 전달
+            # fitz.open()에서 BytesIO 객체를 파일처럼 처리하도록 수정
+            pdf_reader = fitz.open(stream=pdf_file)  # stream 파라미터로 전달
             pdf_text = ""
             
             # 모든 페이지에서 텍스트 추출
@@ -79,3 +80,4 @@ if st.session_state.pdf_text:
 
 else:
     st.warning("PDF URL을 입력해주세요.")
+
